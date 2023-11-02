@@ -31,9 +31,45 @@ class PlayerImage(pygame.sprite.Sprite):
         if keys[pygame.K_d] and self.rect.right < WIDTH:            # Right key and boundary
             self.rect.x += self.speed
 
+class Obstacle(pygame.sprite.Sprite):
+    def __init__(self, all_obstacles):
+        super().__init__()
+        self.width = random.randint(30, 70)                         # Generate random width for the obstacle
+        self.height = random.randint(30, 70)                        # Generate random height for the obstacle
+        self.image = pygame.Surface((self.width, self.height))
+        self.image.fill((255, 255, 255))                            # Obstacle color
+        self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = self.generate_non_overlapping_position(all_obstacles)
+        self.speed = 5                                              # Set the initial speed of the obstacle
+
+    def generate_non_overlapping_position(self, all_obstacles):
+        while True:
+            x = random.randint(0, WIDTH - self.rect.width)
+            y = random.randint(-100, -50)
+            self.rect.topleft = (x, y)
+            if not any(self.rect.colliderect(obstacle.rect) for obstacle in all_obstacles):
+                return x, y
+
+    def update(self):
+        self.rect.y += self.speed
+        if self.rect.top > HEIGHT:                                  # If the obstacle goes off the screen, reset its position
+            self.width = random.randint(30, 70)
+            self.height = random.randint(30, 70)
+            self.image = pygame.Surface((self.width, self.height))
+            self.image.fill((255, 0, 0))
+            self.rect = self.image.get_rect()
+            self.rect.x = random.randint(0, WIDTH - self.rect.width)
+            self.rect.y = random.randint(-100, -50)
+
 my_sprite = PlayerImage()                                           # Create an instance of your custom sprite
 all_sprites = pygame.sprite.Group()
 all_sprites.add(my_sprite)                                          # Add the sprite to the group
+
+obstacles = pygame.sprite.Group()                                   # Create a group for obstacles
+# Add some initial obstacles to the group
+for _ in range(5):                                                  # Add an number of obstacles
+    obstacle = Obstacle(obstacles)
+    obstacles.add(obstacle)
 
 clock = pygame.time.Clock()                                         # Create a Pygame clock object
 start_time = pygame.time.get_ticks()                                # Get the start time (milliseconds)
@@ -47,11 +83,13 @@ while running:
             running = False
 
     # Update or perform any game logic
-    all_sprites.update()
+    all_sprites.update()                                             # Sprite update
+    obstacles.update()                                               # Obstacles update
 
-    # Draw sprite or other object
+    # Draw object so it can be seen on the screen
     WIN.blit(BackGround, (0, 0))
-    all_sprites.draw(WIN)
+    all_sprites.draw(WIN)                                            # Sprite draw
+    obstacles.draw(WIN)                                              # Obstacles draw
 
     # Time code (Elapsed time)
     current_time = pygame.time.get_ticks()
@@ -62,7 +100,7 @@ while running:
 
     pygame.display.flip()
 
-    # Limit the frame rate to 60 frames per second (FPS)
-    clock.tick(144)
+    # Limit the frame rate to 100 frames per second (FPS)
+    clock.tick(100)
 
 pygame.quit()                                                        # Quit pygame
