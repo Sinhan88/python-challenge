@@ -1,0 +1,14 @@
+1.  Create Window Display
+2.  Insert BackGround
+3.  Add Simple(Rectangular) Player
+4.  Insert PNG File To Player Class
+5.  Add Obstacles
+6.  # Insert PNG file to Obstacle # (CANCLED DUE TO PYTHON CAN NOT RUNNING WHEN THE SPRITE INSERTED)
+7.  Add Time (Clock Tick And Elapsed Time)
+8.  Reconstruct Obstacles Class (Not Overlapping)
+9.  Game Collide System
+10. Game Over Message
+11. Restart Button
+12. Difficulty
+13. Play Button
+DONE
