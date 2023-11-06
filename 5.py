@@ -9,8 +9,8 @@ WIDTH, HEIGHT = 1000, 800
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Dodge The Obstacle")
 
-BackGround = pygame.image.load("DP60WY.jpeg")
-sprite_image = pygame.image.load("sprite.png")
+BackGround = pygame.image.load("background.jpeg")
+sprite_image = pygame.image.load("player.png")
 
 sprite_image = pygame.transform.scale(sprite_image, (50, 70))
 best_time = float('inf')
