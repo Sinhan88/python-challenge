@@ -23,7 +23,7 @@ class PlayerImage(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.speed = 3
         self.rect.centerx = WIDTH // 2
-        self.rect.bottom = HEIGHT - 50
+        self.rect.bottom = HEIGHT - 150
 
     def update(self):
         keys = pygame.key.get_pressed()
