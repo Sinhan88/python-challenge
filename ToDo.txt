@@ -10,5 +10,5 @@
 10. Game Over Message
 11. Restart Button
 12. Difficulty
-13. Play Button
+13. # Play Button # (BLACK SCREEN WHEN INSTALLED)
 DONE
