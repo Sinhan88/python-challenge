@@ -9,7 +9,7 @@ WIDTH, HEIGHT = 1000, 800
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Dodge The Obstacle")
 
-BackGround = pygame.image.load("DP60WY.jpeg")
+BackGround = pygame.image.load("P60WY.jpeg")
 sprite_image = pygame.image.load("sprite.png")
 obstacle_image = pygame.image.load("meteor.png")
 
