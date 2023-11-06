@@ -130,4 +130,3 @@ pygame.display.flip()
 time.sleep(1)                                                        # Wait for a few seconds before quitting
 
 pygame.quit()                                                        # Quit pygame
-#
