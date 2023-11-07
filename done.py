@@ -1,7 +1,5 @@
 import pygame
 import random
-import sys
-import time
 
 pygame.init()
 
@@ -9,11 +7,12 @@ WIDTH, HEIGHT = 1000, 800
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Dodge The Obstacle")
 
-BackGround = pygame.image.load("DP60WY.jpeg")
-sprite_image = pygame.image.load("sprite.png")
+BackGround = pygame.image.load("background.jpeg")
+sprite_image = pygame.image.load("player.png")
 obstacle_image = pygame.image.load("meteor.png")
 
 sprite_image = pygame.transform.scale(sprite_image, (50, 70))
+start_time = 0
 
 class PlayerImage(pygame.sprite.Sprite):
     def __init__(self):
@@ -22,7 +21,8 @@ class PlayerImage(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.speed = 3
         self.rect.centerx = WIDTH // 2
-        self.rect.bottom = HEIGHT
+        self.initial_height = HEIGHT - 150
+        self.rect.bottom = self.initial_height
 
     def update(self):
         keys = pygame.key.get_pressed()
@@ -41,6 +41,7 @@ class Obstacle(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = self.generate_non_overlapping_position(all_obstacles)
         self.speed = 5
+        self.speed_increment = 0.005
 
     def generate_non_overlapping_position(self, all_obstacles):
         while True:
@@ -57,75 +58,89 @@ class Obstacle(pygame.sprite.Sprite):
             self.rect.y = random.randint(-100, -50)
 
         if pygame.sprite.spritecollide(self, all_sprites, False):
-            global game_over
-            game_over = True
+            global running
+            running = False
 
-def reset_game():
-    global game_over
-    all_sprites.empty()
-    obstacles.empty()
-    my_sprite.rect.centerx = WIDTH // 2
-    my_sprite.rect.bottom = HEIGHT
-    game_over = False
-
-    all_sprites.add(my_sprite)
-    for _ in range(10):
-        obstacle = Obstacle(obstacles)
-        obstacles.add(obstacle) 
+        self.speed += self.speed_increment
 
 my_sprite = PlayerImage()
 all_sprites = pygame.sprite.Group()
 all_sprites.add(my_sprite)
 
 obstacles = pygame.sprite.Group()
-for _ in range(10):
+
+for _ in range(7):
     obstacle = Obstacle(obstacles)
     obstacles.add(obstacle)
 
 clock = pygame.time.Clock()
-start_time = pygame.time.get_ticks()
 
-running = True
-game_over = False
+def main():
+    global running, best_time, start_time
+    play_again = True
 
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_r and game_over:
-                reset_game()
+    while play_again:
+        running = True
+        start_time = pygame.time.get_ticks()
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
 
-    if not game_over:  
-        all_sprites.update()
-        obstacles.update()
+            if running:
+                all_sprites.update()
+                obstacles.update()
 
-    WIN.blit(BackGround, (0, 0))
-    all_sprites.draw(WIN)
-    obstacles.draw(WIN)
+            WIN.blit(BackGround, (0, 0))
+            all_sprites.draw(WIN)
+            obstacles.draw(WIN)
 
-    if not game_over: 
-        collisions = pygame.sprite.spritecollide(my_sprite, obstacles, False)
-        if collisions:
-            game_over = True
+            if running:
+                collisions = pygame.sprite.spritecollide(my_sprite, obstacles, False)
+                if collisions:
+                    running = False
 
-    current_time = pygame.time.get_ticks()
-    elapsed_time = (current_time - start_time) // 1000
-    font = pygame.font.Font(None, 36)
-    text = font.render(f"Time: {elapsed_time}", True, (255, 255, 255))
-    WIN.blit(text, (10, 10))
+            current_time = pygame.time.get_ticks()
+            elapsed_time = (current_time - start_time) // 1000
+            font = pygame.font.Font(None, 36)
+            text = font.render(f"Time: {elapsed_time}", True, (255, 255, 255))
+            WIN.blit(text, (10, 10))
 
-    pygame.display.flip()
-    clock.tick(100)
+            pygame.display.flip()
+            clock.tick(60)
 
-    if game_over:
         font = pygame.font.Font(None, 72)
-        text = font.render("Game Over - Press R to Restart", True, (255, 0, 0))
+        text = font.render("Game Over", True, (255, 0, 0))
         text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
         WIN.blit(text, text_rect)
         pygame.display.flip()
 
-    if game_over:
-        time.sleep(1)
+        play_again_font = pygame.font.Font(None, 36)
+        play_again_text = play_again_font.render("Press 'R' to play again", True, (255, 255, 255))
+        play_again_text_rect = play_again_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50))
+        WIN.blit(play_again_text, play_again_text_rect)
+        pygame.display.flip()
 
-pygame.quit()
+        waiting_for_restart = True
+        while waiting_for_restart:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    play_again = False
+                    waiting_for_restart = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_r:
+                        play_again = True
+                        waiting_for_restart = False
+                        my_sprite.rect.centerx = WIDTH // 2
+                        my_sprite.rect.bottom = my_sprite.initial_height
+                        obstacles.empty()
+                        for _ in range(7):
+                            obstacle = Obstacle(obstacles)
+                            obstacles.add(obstacle)
+
+        pygame.time.delay(500)
+
+    pygame.quit()
+
+if __name__ == "__main__":
+    main()
