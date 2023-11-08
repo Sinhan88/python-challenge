@@ -3,9 +3,9 @@
 3.  Add Simple(Rectangular) Player
 4.  Insert PNG File To Player Class
 5.  Add Obstacles
-6.  # Insert PNG file to Obstacle # (CANCLED DUE TO PYTHON CAN NOT RUNNING WHEN THE SPRITE INSERTED)
+6.  Insert PNG file to Obstacle
 7.  Add Time (Clock Tick And Elapsed Time)
-8.  Reconstruct Obstacles Class (Not Overlapping)
+8.  Reconstruct Obstacles Class
 9.  Game Collide System
 10. Game Over Message
 11. Restart Button
