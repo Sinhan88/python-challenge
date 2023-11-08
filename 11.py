@@ -5,11 +5,11 @@ pygame.init()
 
 WIDTH, HEIGHT = 1000, 800
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-
 pygame.display.set_caption("Dodge The Obstacle")
-BackGround = pygame.image.load("background.jpeg")
 
+BackGround = pygame.image.load("background.jpeg")
 sprite_image = pygame.image.load("player.png")
+
 sprite_image = pygame.transform.scale(sprite_image, (50, 70))
 start_time = 0
 
@@ -47,7 +47,10 @@ class Obstacle(pygame.sprite.Sprite):
             x = random.randint(0, WIDTH - self.rect.width)
             y = random.randint(-100, -50)
             self.rect.topleft = (x, y)
-            if not any(self.rect.colliderect(obstacle.rect) for obstacle in all_obstacles) and not self.rect.colliderect(my_sprite.rect):
+            if (
+                not any(self.rect.colliderect(obstacle.rect) for obstacle in all_obstacles)
+                and not self.rect.colliderect(my_sprite.rect)
+            ):
                 return x, y
 
     def update(self):
@@ -63,7 +66,7 @@ class Obstacle(pygame.sprite.Sprite):
         self.speed += self.speed_increment
 
 def generate_random_obstacle_size():
-    size = random.randint(50, 100)
+    size = random.randint(50, 70)
     return pygame.transform.scale(obstacle_image, (size, size))
 
 my_sprite = PlayerImage()
@@ -78,12 +81,39 @@ for _ in range(7):
 
 clock = pygame.time.Clock()
 
+running = False
+waiting_to_start = True
+
+def main_menu():
+    global waiting_to_start, running
+    menu_font = pygame.font.Font(None, 72)
+    menu_text = menu_font.render("Dodge The Obstacle", True, (255, 255, 255))
+    menu_text_rect = menu_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
+
+    play_text = menu_font.render("Press 'Space' to Play", True, (255, 255, 255))
+    play_text_rect = play_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50))
+
+    while waiting_to_start:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                waiting_to_start = False
+                running = True
+
+        WIN.blit(BackGround, (0, 0))
+        WIN.blit(menu_text, menu_text_rect)
+        WIN.blit(play_text, play_text_rect)
+        pygame.display.update()
+
 def main():
-    global running, best_time, start_time
+    global running, start_time
     play_again = True
 
     while play_again:
-        running = True
+        main_menu()
+
         start_time = pygame.time.get_ticks()
         while running:
             for event in pygame.event.get():
@@ -126,7 +156,7 @@ def main():
     pygame.quit()
 
 def Game_Loop():
-    running = True
+    global running
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
