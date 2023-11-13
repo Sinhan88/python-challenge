@@ -29,7 +29,7 @@ Dodge The Obstacle is a Python game developed with the Pygame library. It challe
 
 2. Install dependencies:
 
-    Pip install -r requirenments.txt
+    Pip install pygame
 
 ## How to play
 
