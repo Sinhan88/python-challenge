@@ -33,7 +33,7 @@ Dodge The Obstacle is a Python game developed with the Pygame library. It challe
 
 ## How to play
 
-Launch the game by running Game_Done.py. Use the arrow keys to control the character and dodge the falling obstacles.
+Launch the game by running Dodge_The_Obstacle.py. Use the arrow keys to control the character and dodge the falling obstacles.
 
 - Controls
     Move Left: <kbd>A</kbd>
