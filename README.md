@@ -25,7 +25,7 @@ Dodge The Obstacle is a Python game developed with the Pygame library. It challe
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/Sinhan88/dodge-the-obstacle.git
+   git clone https://github.com/Sinhan88/python-challenge.git
 
 2. Install dependencies:
 
