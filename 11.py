@@ -82,10 +82,9 @@ for _ in range(7):
 clock = pygame.time.Clock()
 
 running = False
-waiting_to_start = True
 
 def main_menu():
-    global waiting_to_start, running
+    global running
     menu_font = pygame.font.Font(None, 72)
     menu_text = menu_font.render("Dodge The Obstacle", True, (255, 255, 255))
     menu_text_rect = menu_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
@@ -93,19 +92,20 @@ def main_menu():
     play_text = menu_font.render("Press 'Space' to Play", True, (255, 255, 255))
     play_text_rect = play_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50))
 
-    while waiting_to_start:
+    WIN.blit(BackGround, (0, 0))
+    WIN.blit(menu_text, menu_text_rect)
+    WIN.blit(play_text, play_text_rect)
+    pygame.display.update()
+
+    waiting_for_space = True
+    while waiting_for_space:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                waiting_to_start = False
+                waiting_for_space = False
                 running = True
-
-        WIN.blit(BackGround, (0, 0))
-        WIN.blit(menu_text, menu_text_rect)
-        WIN.blit(play_text, play_text_rect)
-        pygame.display.update()
 
 def main():
     global running, start_time

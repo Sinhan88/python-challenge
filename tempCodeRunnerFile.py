@@ -5,14 +5,16 @@ pygame.init()
 
 WIDTH, HEIGHT = 1000, 800
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+
 pygame.display.set_caption("Dodge The Obstacle")
-
 BackGround = pygame.image.load("background.jpeg")
-sprite_image = pygame.image.load("player.png")
-obstacle_image = pygame.image.load("meteor.png")
 
+sprite_image = pygame.image.load("player.png")
 sprite_image = pygame.transform.scale(sprite_image, (50, 70))
 start_time = 0
+
+obstacle_image = pygame.image.load("obstacle.png")
+obstacle_image = pygame.transform.scale(obstacle_image, (50, 50))
 
 class PlayerImage(pygame.sprite.Sprite):
     def __init__(self):
@@ -32,12 +34,9 @@ class PlayerImage(pygame.sprite.Sprite):
             self.rect.x += self.speed
 
 class Obstacle(pygame.sprite.Sprite):
-    def __init__(self, all_obstacles):
+    def __init__(self, all_obstacles, obstacle_image):
         super().__init__()
-        self.width = random.randint(30, 70)
-        self.height = random.randint(30, 70)
-        self.image = pygame.Surface((self.width, self.height))
-        self.image.fill((255, 255, 255))
+        self.image = obstacle_image
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = self.generate_non_overlapping_position(all_obstacles)
         self.speed = 5
@@ -48,7 +47,7 @@ class Obstacle(pygame.sprite.Sprite):
             x = random.randint(0, WIDTH - self.rect.width)
             y = random.randint(-100, -50)
             self.rect.topleft = (x, y)
-            if not any(self.rect.colliderect(obstacle.rect) for obstacle in all_obstacles):
+            if not any(self.rect.colliderect(obstacle.rect) for obstacle in all_obstacles) and not self.rect.colliderect(my_sprite.rect):
                 return x, y
 
     def update(self):
@@ -63,6 +62,10 @@ class Obstacle(pygame.sprite.Sprite):
 
         self.speed += self.speed_increment
 
+def generate_random_obstacle_size():
+    size = random.randint(50, 100)
+    return pygame.transform.scale(obstacle_image, (size, size))
+
 my_sprite = PlayerImage()
 all_sprites = pygame.sprite.Group()
 all_sprites.add(my_sprite)
@@ -70,7 +73,7 @@ all_sprites.add(my_sprite)
 obstacles = pygame.sprite.Group()
 
 for _ in range(7):
-    obstacle = Obstacle(obstacles)
+    obstacle = Obstacle(obstacles, generate_random_obstacle_size())
     obstacles.add(obstacle)
 
 clock = pygame.time.Clock()
@@ -87,27 +90,7 @@ def main():
                 if event.type == pygame.QUIT:
                     running = False
 
-            if running:
-                all_sprites.update()
-                obstacles.update()
-
-            WIN.blit(BackGround, (0, 0))
-            all_sprites.draw(WIN)
-            obstacles.draw(WIN)
-
-            if running:
-                collisions = pygame.sprite.spritecollide(my_sprite, obstacles, False)
-                if collisions:
-                    running = False
-
-            current_time = pygame.time.get_ticks()
-            elapsed_time = (current_time - start_time) // 1000
-            font = pygame.font.Font(None, 36)
-            text = font.render(f"Time: {elapsed_time}", True, (255, 255, 255))
-            WIN.blit(text, (10, 10))
-
-            pygame.display.flip()
-            clock.tick(60)
+            Game_Loop()
 
         font = pygame.font.Font(None, 72)
         text = font.render("Game Over", True, (255, 0, 0))
@@ -135,12 +118,40 @@ def main():
                         my_sprite.rect.bottom = my_sprite.initial_height
                         obstacles.empty()
                         for _ in range(7):
-                            obstacle = Obstacle(obstacles)
+                            obstacle = Obstacle(obstacles, generate_random_obstacle_size())
                             obstacles.add(obstacle)
 
         pygame.time.delay(500)
 
     pygame.quit()
+
+def Game_Loop():
+    running = True
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    if running:
+        all_sprites.update()
+        obstacles.update()
+
+        WIN.blit(BackGround, (0, 0))
+        all_sprites.draw(WIN)
+        obstacles.draw(WIN)
+
+        if running:
+            collisions = pygame.sprite.spritecollide(my_sprite, obstacles, False)
+            if collisions:
+                running = False
+
+        current_time = pygame.time.get_ticks()
+        elapsed_time = (current_time - start_time) // 1000
+        font = pygame.font.Font(None, 36)
+        text = font.render(f"Time: {elapsed_time}", True, (255, 255, 255))
+        WIN.blit(text, (10, 10))
+
+        pygame.display.flip()
+        clock.tick(60)
 
 if __name__ == "__main__":
     main()
